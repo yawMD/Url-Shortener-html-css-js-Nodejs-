@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css" rel="stylesheet"/>
+    <title>Document</title>
+</head>
+<header>
+    <nav>
+        <div class="first sel">
+        <select>
+            <option value="All links">All Links</option>
+        </select>
+        </div>
+
+        <div class="first">
+            <input id="myInput" onkeyup="myFunction()" type="text" placeholder="Search link ..."/>
+        </div>
+        
+    </nav>
+</header>
+<body>
+<div class="men"></div>
+    <div class="main">
+        <div class="sec2">
+        <form id="myscript">
+            <input type="text" id="url-in" required name="archive" placeholder="Paste in URL"><br><br>
+            <input id="sub" class="button" type="submit" value="Submit">
+            <div class="urlDisp"><p id="display"></p></div>
+        </form>
+        </div>
+
+        <div class="sec3">
+            <div class="history"><h2>HISTORY</h2></div>
+            <!-- <div class="allUrl">
+                <p class="dispText">ooooo</p>
+                <p class="dispNew">ooops</p>
+            </div> -->
+        </div>
+    </div>
+    <footer>@MCDAN</footer>
+
+    <script>
+        
+        const form = document.getElementById("myscript");
+        form.addEventListener("submit",function(event){
+        event.preventDefault()
+
+        const longUrl = document.getElementById("url-in").value;
+        
+
+        fetch('http://localhost:5000/api/url/shorten',{
+            method: 'POST',
+            headers: {'content-type': 'application/json'},
+            body: JSON.stringify({
+                longUrl,
+        })
+        }).then((data)=>{
+            return data.json();
+        }).then(function (newResponse){
+            console.log(newResponse);
+            console.log(newResponse.shortUrl);
+            const shortUrl = newResponse.shortUrl
+
+            display.textContent = shortUrl
+            // callback(newResponse);
+        }).catch(() => alert('form was not submitted'))
+
+    })
+
+
+
+    const display = document.getElementById('display')
+
+
+
+
+
+
+    window.addEventListener("load",function(){
+
+        const apiGet = function (callback){
+        fetch("http://localhost:5000/api/url/urls").then((data)=>{
+            return data.json();
+        }).then(function (newResponse){
+            //console.log(newResponse);
+            callback(newResponse);
+        })
+    }
+
+    apiGet(function (element){
+        console.log(element);
+
+        let getLengthOfArray = element.length;
+        console.log(getLengthOfArray);
+
+        for (let i = 0; i< getLengthOfArray;i++){
+
+        const parent = document.querySelector(".sec3")    
+
+        const allurl = document.createElement("ul")
+        allurl.setAttribute("class","allUrl")
+        const dispText = document.createElement("li")
+        dispText.setAttribute("class","dispText")
+        const link = document.createElement("a")
+        link.setAttribute("href",element[i]["longUrl"])
+        link.textContent = element[i]["longUrl"];
+        const displayText = document.createElement("li")
+        const dispNew = document.createElement("a")
+        dispNew.setAttribute("class","dispNew")
+        dispNew.textContent = element[i]["shortUrl"];
+
+        dispText.appendChild(link)
+        displayText.appendChild(dispNew)
+        allurl.appendChild(dispText)
+        allurl.appendChild(displayText)
+
+        parent.appendChild(allurl)
+        }
+    })
+})
+    
+function myFunction() {
+    var input, filter, ul, li, a, i, txtValue;
+    input = document.getElementById("myInput");
+    filter = input.value;
+    ul = document.querySelector(".allUrl");
+    li = ul.getElementsByTagName("li");
+    for (i = 0; i < li.length; i++) {
+        a = li[i].getElementsByTagName("a")[0];
+        txtValue = a.textContent || a.innerText;
+        if (txtValue.indexOf(filter) > -1) {
+            li[i].style.display = "";
+        } else {
+            li[i].style.display = "none";
+        }
+    }
+}
+    
+    
+   
+    
+    </script>
+</body>
+</html>
